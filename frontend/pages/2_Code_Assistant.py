@@ -1,5 +1,7 @@
 import streamlit as st
 from api_client import create_session, get_sessions, get_messages, send_message, delete_session
+from auth_manager import load_token
+load_token()
 
 st.set_page_config(page_title="Code Assistant", page_icon="💻", layout="wide")
 

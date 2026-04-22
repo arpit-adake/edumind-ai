@@ -1,5 +1,7 @@
 import streamlit as st
 from api_client import create_session, get_sessions, get_messages, send_message, delete_session
+from auth_manager import load_token
+load_token()
 
 st.set_page_config(page_title="Student Assistant", page_icon="📚", layout="wide")
 
@@ -106,7 +108,8 @@ else:
 
     st.divider()
 
-    if shortcut != "None":
+    if shortcut != "None" and st.session_state.get("last_shortcut") != shortcut:
+        st.session_state.last_shortcut = shortcut
         prompt = shortcut
         st.session_state.student_messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
@@ -117,8 +120,9 @@ else:
                 reply = response.get("reply", "Sorry, something went wrong.")
                 st.markdown(reply)
         st.session_state.student_messages.append({"role": "assistant", "content": reply})
-        st.session_state.student_shortcut = "None"
         st.rerun()
+    elif shortcut == "None":
+        st.session_state.last_shortcut = None
 
     if prompt := st.chat_input("Ask me anything..."):
         st.session_state.student_messages.append({"role": "user", "content": prompt})
